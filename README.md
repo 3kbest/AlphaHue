@@ -33,12 +33,18 @@ $bridge_username = 'xxxxxxxxxxx';
 $hue = new \AlphaHue\AlphaHue($bridge_hostname, $bridge_username);
 ```
 ### (or) add AlphaHue as a dependency to your Hue project using Composer.
-Create a *composer.json* file in your project and add `adam-innes/alpha-hue` as a required dependency.
+Create a *composer.json* file in your project: 
 ```
 {
-    "require": {
-        "adam-innes/alpha-hue": "1.0.*"
-    }
+    "repositories": [
+            {
+                "type": "vcs",
+                "url": "https://github.com/3kbest/AlphaHue.git"
+            }
+        ],
+        "require": {
+            "3kbest/alphaHue": "2.0.0",
+        }
 }
 ```
 ### Discovering Bridge Hostname and creating a Username
