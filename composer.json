@@ -12,7 +12,6 @@
     ],
     "require": {
         "php": ">=7.4",
-        "adam-innes/php-rest-client": "1.0.*",
         "php-curl-class/php-curl-class": "8.8.0"
     },
     "autoload": {
