@@ -2,16 +2,13 @@
 ## Synopsis
 This is a quick-to-implement library that connects your PHP project to the Phillips Hue lighting system. When I started writing an app for the Hue I found a need for an SDK that was complete and uncomplex with decent documentation. AlphaHue is an attempt to fill that need and speed up the process of getting started.
 
-Forked from https://github.com/innesian/AlphaHue
-
-Changed to antoher curl class due to notice errors.
-And fixes some issues
+AlphaHue uses the [php-curl-class](https://github.com/php-curl-class/php-curl-class) to interact with the Hue APIs.
 
 ## Setup
 ### Installation with Composer.
 Clone the repository.
 ```
-$ git clone https://github.com/3kbest/AlphaHue.git
+$ git clone https://github.com/innesian/AlphaHue.git
 ```
 Install Composer in your project using cURL (command below) or [download the composer.phar directly](http://getcomposer.org/composer.phar).
 ```
@@ -33,18 +30,12 @@ $bridge_username = 'xxxxxxxxxxx';
 $hue = new \AlphaHue\AlphaHue($bridge_hostname, $bridge_username);
 ```
 ### (or) add AlphaHue as a dependency to your Hue project using Composer.
-Create a *composer.json* file in your project: 
+Create a *composer.json* file in your project and add `adam-innes/alpha-hue` as a required dependency.
 ```
 {
-    "repositories": [
-            {
-                "type": "vcs",
-                "url": "https://github.com/3kbest/AlphaHue.git"
-            }
-        ],
-        "require": {
-            "3kbest/alphaHue": "2.0.0",
-        }
+    "require": {
+        "adam-innes/alpha-hue": "2.0.*"
+    }
 }
 ```
 ### Discovering Bridge Hostname and creating a Username
