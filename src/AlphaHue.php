@@ -3,6 +3,7 @@
 namespace AlphaHue;
 
 use Curl\Curl;
+use ErrorException;
 
 class AlphaHue
 {
@@ -39,6 +40,7 @@ class AlphaHue
 
     private Curl $curl;
     private array $config;
+    private string $baseUrl;
 
     /**
      * Initializes class with Bridge Address and Username.
@@ -47,6 +49,7 @@ class AlphaHue
      *
      * @param string $bridge_address  Host (and optionally port) of the Bridge.
      * @param string $bridge_username Username retrieved from the Bridge through authentication.
+     * @throws ErrorException
      *
      * @return void
      */
@@ -55,7 +58,9 @@ class AlphaHue
         $this->bridge_address = $bridge_address;
         $this->bridge_username = $bridge_username;
 
-        $this->curl = new Curl("http://{$bridge_address}/api/{$bridge_username}/");
+        $this->baseUrl = "http://{$bridge_address}/api/{$bridge_username}/";
+
+        $this->curl = new Curl($this->baseUrl );
         $this->curl->setDefaultJsonDecoder($assoc = true);
         $this->curl->setHeader('Content-Type', 'application/json');
 
@@ -92,7 +97,7 @@ class AlphaHue
      */
     public function getConfiguration()
     {
-        $response = $this->curl->get('config');
+        $response = $this->curl->get($this->baseUrl. 'config');
         $this->config = $response;
     }
 
@@ -150,7 +155,7 @@ class AlphaHue
         $light_state = ('on' == $light_state); // on=true, off=false
         $this->throttle();
 
-        $this->curl->put("lights/{$light_id}/state",
+        $this->curl->put($this->baseUrl. "lights/{$light_id}/state",
             json_encode([
                 'on' => $light_state
                 ]
@@ -167,7 +172,7 @@ class AlphaHue
      */
     public function getLightIds()
     {
-        $response = $this->curl->get('lights');
+        $response = $this->curl->get($this->baseUrl. 'lights');
         return array_keys($response);
     }
 
@@ -180,7 +185,7 @@ class AlphaHue
      */
     public function getLightOnStatus($light_id)
     {
-        $response = $this->curl->get("lights/{$light_id}");
+        $response = $this->curl->get($this->baseUrl. "lights/{$light_id}");
         return $response['state']['on'];
     }
 
@@ -193,7 +198,7 @@ class AlphaHue
      */
     public function getLightState($light_id)
     {
-        return $this->curl->get("lights/{$light_id}");
+        return $this->curl->get($this->baseUrl. "lights/{$light_id}");
     }
 
     /**
@@ -227,7 +232,7 @@ class AlphaHue
     public function setLightState($light_id, $state)
     {
         $this->throttle();
-        return $this->curl->put("lights/{$light_id}/state", json_encode($state));
+        return $this->curl->put($this->baseUrl. "lights/{$light_id}/state", json_encode($state));
     }
 
     /**
@@ -274,7 +279,7 @@ class AlphaHue
     public function setLightAttributes($light_id, $attributes)
     {
         $this->throttle();
-        return $this->curl->put("lights/{$light_id}", json_encode($attributes));
+        return $this->curl->put($this->baseUrl. "lights/{$light_id}", json_encode($attributes));
     }
 
     /**
@@ -287,7 +292,7 @@ class AlphaHue
     public function deleteLight($light_id)
     {
         $this->throttle();
-        return $this->curl->delete("lights/{$light_id}");
+        return $this->curl->delete($this->baseUrl. "lights/{$light_id}");
     }
 
     /**
@@ -297,7 +302,7 @@ class AlphaHue
      */
     public function searchNewDevices()
     {
-        return $this->curl->post('lights');
+        return $this->curl->post($this->baseUrl. 'lights');
     }
 
     /**
@@ -307,7 +312,7 @@ class AlphaHue
      */
     public function getGroups()
     {
-        return $this->curl->get('groups');
+        return $this->curl->get($this->baseUrl. 'groups');
     }
 
     /**
@@ -352,7 +357,7 @@ class AlphaHue
         $params['lights'] = array_map('strval', $lights);
 
         $this->throttle();
-        return $this->curl->post('groups', json_encode($params));
+        return $this->curl->post($this->baseUrl. 'groups', json_encode($params));
     }
 
     /**
@@ -370,7 +375,7 @@ class AlphaHue
     public function setGroupAttributes($group_id, $attributes)
     {
         $this->throttle();
-        return $this->curl->put("groups/{$group_id}", json_encode($attributes));
+        return $this->curl->put($this->baseUrl. "groups/{$group_id}", json_encode($attributes));
     }
 
     /**
@@ -383,7 +388,7 @@ class AlphaHue
     public function deleteGroup($group_id)
     {
         $this->throttle();
-        return $this->curl->delete("groups/{$group_id}");
+        return $this->curl->delete($this->baseUrl. "groups/{$group_id}");
     }
 
     /**
@@ -417,7 +422,7 @@ class AlphaHue
     public function setGroupState($group_id, $state)
     {
         $this->throttle();
-        return $this->curl->put("groups/{$group_id}/action", json_encode($state));
+        return $this->curl->put($this->baseUrl. "groups/{$group_id}/action", json_encode($state));
     }
 
     /**
@@ -427,7 +432,7 @@ class AlphaHue
      */
     public function getSensors()
     {
-        return $this->curl->get('sensors');
+        return $this->curl->get($this->baseUrl. 'sensors');
     }
 
     /**
@@ -437,7 +442,7 @@ class AlphaHue
      */
     public function getRules()
     {
-        return $this->curl->get('rules');
+        return $this->curl->get($this->baseUrl. 'rules');
     }
 
     /**
@@ -449,7 +454,7 @@ class AlphaHue
      */
     public function getRule($rule_id)
     {
-        return $this->curl->get("rules/{$rule_id}");
+        return $this->curl->get($this->baseUrl. "rules/{$rule_id}");
     }
 
     /**
@@ -462,7 +467,7 @@ class AlphaHue
     public function deleteRule($rule_id)
     {
         $this->throttle();
-        return $this->curl->get("rules/{$rule_id}");
+        return $this->curl->get($this->baseUrl. "rules/{$rule_id}");
     }
 
     /**
@@ -494,7 +499,7 @@ class AlphaHue
         $params['actions'] = $actions;
 
         $this->throttle();
-        return $this->curl->post('rules', json_encode($params));
+        return $this->curl->post($this->baseUrl. 'rules', json_encode($params));
     }
 
     /**
@@ -522,7 +527,7 @@ class AlphaHue
     public function updateRule($rule_id, $attributes)
     {
         $this->throttle();
-        return $this->curl->put("rules/{$rule_id}", json_encode($attributes));
+        return $this->curl->put($this->baseUrl. "rules/{$rule_id}", json_encode($attributes));
     }
 
     /**
@@ -532,7 +537,7 @@ class AlphaHue
      */
     public function getSchedules()
     {
-        return $this->curl->get("schedules");
+        return $this->curl->get($this->baseUrl. "schedules");
     }
 
     /**
@@ -562,7 +567,7 @@ class AlphaHue
          * $arguments['command']->body;    JSON string to be sent to the relevant resource.
          */
         $this->throttle();
-        return $this->curl->post("schedules", json_encode($attributes));
+        return $this->curl->post($this->baseUrl. "schedules", json_encode($attributes));
     }
 
     /**
@@ -576,7 +581,7 @@ class AlphaHue
      */
     public function getSchedule($schedule_id)
     {
-        return $this->curl->get("schedules/{$schedule_id}");
+        return $this->curl->get($this->baseUrl. "schedules/{$schedule_id}");
     }
 
     /**
@@ -606,7 +611,7 @@ class AlphaHue
          * $arguments['command']->body;    JSON string to be sent to the relevant resource.
          */
         $this->throttle();
-        return $this->curl->post("schedules", $attributes);
+        return $this->curl->post($this->baseUrl. "schedules", $attributes);
     }
 
     /**
@@ -618,6 +623,6 @@ class AlphaHue
     public function deleteSchedule($schedule_id)
     {
         $this->throttle();
-        return $this->curl->delete("schedules/{$schedule_id}");
+        return $this->curl->delete($this->baseUrl. "schedules/{$schedule_id}");
     }
 }
